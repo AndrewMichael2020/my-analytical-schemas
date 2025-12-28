@@ -1,0 +1,541 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://caadsi.org/schemas/visual-analysis-v7-3.json",
+  "title": "Canonical Visual Analysis Schema: Synthesis Edition (v7.3)",
+  "description": "A unified schema separating Primary Observation (Data) from Analytical Frameworks (Systems), Critical Perspectives (Critique), Evaluative Metrics (Mastery/Value), and Final Synthesis (Outro).",
+  "type": "object",
+  "definitions": {
+    "MetricString": {
+      "type": "object",
+      "description": "A string value with attached provenance/confidence metrics.",
+      "properties": {
+        "value": { "type": "string" },
+        "confidence": { 
+            "type": "number", 
+            "minimum": 0.0, 
+            "maximum": 1.0,
+            "description": "INSTRUCTION: Assign a probability score (0.0-1.0). 1.0 = Absolute certainty/Consensus. <0.5 = Speculative."
+        },
+        "source": { 
+            "type": "string",
+            "description": "INSTRUCTION: Cite the specific model (e.g., 'ResNet50') or the critical text/expert (e.g., 'Clement Greenberg', 'Expert_ID_04')."
+        },
+        "notes": { "type": "string" }
+      },
+      "required": ["value"]
+    },
+    "MetricNumber": {
+      "type": "object",
+      "properties": {
+        "value": { "type": "number" },
+        "confidence": { "type": "number", "minimum": 0, "maximum": 1 },
+        "source": { "type": "string" }
+      },
+      "required": ["value"]
+    },
+    "MetricArray": {
+      "type": "object",
+      "properties": {
+        "value": { "type": "array", "items": { "type": "string" } },
+        "confidence": { "type": "number", "minimum": 0, "maximum": 1 },
+        "source": { "type": "string" }
+      },
+      "required": ["value"]
+    },
+    "PolarityPair": {
+      "type": "object",
+      "description": "A spectrum between two theoretical opposites.",
+      "properties": {
+        "score": { 
+            "type": "number", 
+            "minimum": 0.0, 
+            "maximum": 1.0,
+            "description": "INSTRUCTION: Position the work on the spectrum. 0.0 = Pure Left Term. 1.0 = Pure Right Term. 0.5 = Synthesis/Neutral." 
+        },
+        "classification": { "type": "string" },
+        "confidence": { "type": "number", "minimum": 0, "maximum": 1 }
+      },
+      "required": ["score", "confidence"]
+    }
+  },
+  "properties": {
+    "metadata": {
+      "type": "object",
+      "properties": {
+        "analysis_id": { "type": "string", "format": "uuid" },
+        "analyst_id": { "type": "string" },
+        "timestamp": { "type": "string", "format": "date-time" },
+        "schema_version": { "type": "string", "const": "7.3.0" }
+      },
+      "required": ["analysis_id"]
+    },
+    "object_provenance": {
+      "type": "object",
+      "description": "Tombstone data: Factual identification.",
+      "properties": {
+        "title": { 
+            "description": "PROMPT: What is the accepted catalog title of the work?",
+            "$ref": "#/definitions/MetricString" 
+        },
+        "artist": { 
+            "description": "PROMPT: Who is the primary creator? If unknown, specify 'School of...' or 'Attributed to...'.",
+            "$ref": "#/definitions/MetricString" 
+        },
+        "date_creation": { "$ref": "#/definitions/MetricString" },
+        "medium": { "$ref": "#/definitions/MetricString" },
+        "dimensions": { "$ref": "#/definitions/MetricString" },
+        "current_location": { "$ref": "#/definitions/MetricString" },
+        "digital_properties": {
+            "type": "object",
+            "properties": {
+                "file_format": { "$ref": "#/definitions/MetricString" },
+                "generation_method": { "$ref": "#/definitions/MetricString" }
+            }
+        }
+      },
+      "required": ["title"]
+    },
+    "primary_observation": {
+      "type": "object",
+      "description": "Layer 1: Raw Data Collection (Pre-Interpretation).",
+      "properties": {
+        "physical_data": {
+           "description": "Material facts (Support, Condition).",
+           "properties": {
+              "support_structure": { 
+                  "description": "PROMPT: Identify the substrate. Is it canvas (weave type?), wood panel (species?), copper, paper, or digital raster?",
+                  "$ref": "#/definitions/MetricString" 
+              },
+              "conservation_state": { 
+                  "description": "PROMPT: Note visible damage, varnish yellowing, craquelure, or evidence of restoration.",
+                  "$ref": "#/definitions/MetricString" 
+              }
+           }
+        },
+        "formal_elements": {
+          "description": "Basic visual building blocks.",
+          "properties": {
+            "line": { 
+                "description": "PROMPT: Analyze line quality. Is it analytic/contour (defining edges) or expressive/gestural (recording motion)? Are lines implied by gaze or light?",
+                "$ref": "#/definitions/MetricString" 
+            },
+            "shape_and_form": { 
+                "description": "PROMPT: Describe the dominant forms. Are they geometric/rectilinear or organic/biomorphic? Closed masses or open volumes?",
+                "$ref": "#/definitions/MetricString" 
+            },
+            "color_palette": { 
+                "description": "PROMPT: List dominant hues. Is the palette polychromatic, monochromatic, or tonal? Note saturation and value contrast (Chiaroscuro/Tenebrism).",
+                "$ref": "#/definitions/MetricString" 
+            },
+            "texture": { 
+                "description": "PROMPT: Describe surface quality. Is it smooth/licked (facture invisible) or impasto/rough (facture visible)? Is texture simulated (trompe l'oeil) or actual?",
+                "$ref": "#/definitions/MetricString" 
+            },
+            "space_and_perspective": { 
+                "description": "PROMPT: How is depth constructed? Linear perspective (one/two point), atmospheric perspective, isometric projection, or shallow/compressed space?",
+                "$ref": "#/definitions/MetricString" 
+            },
+            "typography": { 
+                "description": "PROMPT: If text is present, analyze font, weight, and integration with visual elements.",
+                "$ref": "#/definitions/MetricString" 
+            }
+          }
+        },
+        "principles_of_design": {
+          "description": "Compositional arrangement.",
+          "properties": {
+            "balance": { 
+                "description": "PROMPT: Is the composition Symmetrical, Asymmetrical, or Radial? How is visual weight distributed?",
+                "$ref": "#/definitions/MetricString" 
+            },
+            "emphasis_focal_point": { 
+                "description": "PROMPT: Where does the eye land first? What visual mechanism (contrast, isolation, convergence) creates this focal point?",
+                "$ref": "#/definitions/MetricString" 
+            },
+            "movement_rhythm": { 
+                "description": "PROMPT: How does the eye travel through the work? Are there repeating motifs creating a visual beat or flow?",
+                "$ref": "#/definitions/MetricString" 
+            },
+            "unity_variety": { 
+                "description": "PROMPT: Is the work chaotic (High Variety) or cohesive (High Unity)? What elements tie it together?",
+                "$ref": "#/definitions/MetricString" 
+            }
+          }
+        },
+        "subject_matter": {
+          "description": "Natural description (Panofsky Level 1).",
+          "properties": {
+            "keywords": { "$ref": "#/definitions/MetricArray" },
+            "description_natural": { 
+                "description": "PROMPT: Describe strictly what is visible without assigning symbolic meaning (e.g., 'A man holding a metal stick', not 'A King with a scepter').",
+                "$ref": "#/definitions/MetricString" 
+            },
+            "figure_count": { "$ref": "#/definitions/MetricNumber" },
+            "dominant_objects": { "$ref": "#/definitions/MetricArray" }
+          }
+        }
+      }
+    },
+    "analytical_frameworks": {
+      "type": "object",
+      "description": "Layer 2: Systemic Interpretation (The 6 Clusters).",
+      "properties": {
+        "1_formal_stylistic_systems": {
+          "type": "object",
+          "properties": {
+            "greenbergian_formalism": {
+              "description": "PROMPT: Analyze the work using Clement Greenberg's criteria of medium specificity.",
+              "properties": {
+                "medium_specificity": { 
+                    "description": "PROMPT: Does the work acknowledge its physical limits (e.g., paint on canvas)? Or does it try to hide them?",
+                    "$ref": "#/definitions/MetricString" 
+                },
+                "opticality_vs_tactility": { 
+                    "description": "PROMPT: Does the surface appeal to the eye (Optical/1.0) or imply touch/texture (Tactile/0.0)?",
+                    "$ref": "#/definitions/PolarityPair" 
+                },
+                "flatness_assertion": { 
+                    "description": "PROMPT: How does the work assert the flatness of the picture plane?",
+                    "$ref": "#/definitions/MetricString" 
+                }
+              }
+            },
+            "woelfflinian_evolution": {
+              "description": "PROMPT: Categorize the style using Heinrich Wölfflin's five binary pairs.",
+              "properties": {
+                "linear_vs_painterly": { 
+                    "description": "PROMPT: 0.0=Linear (boundaries/lines distinct). 1.0=Painterly (boundaries merge/masses).",
+                    "$ref": "#/definitions/PolarityPair" 
+                },
+                "plane_vs_recession": { 
+                    "description": "PROMPT: 0.0=Plane (parallel layers). 1.0=Recession (diagonal depth).",
+                    "$ref": "#/definitions/PolarityPair" 
+                },
+                "closed_vs_open_form": { 
+                    "description": "PROMPT: 0.0=Closed (self-contained/frame respects). 1.0=Open (implies space beyond frame).",
+                    "$ref": "#/definitions/PolarityPair" 
+                },
+                "multiplicity_vs_unity": { 
+                    "description": "PROMPT: 0.0=Multiplicity (parts distinct). 1.0=Unity (parts subordinate to whole).",
+                    "$ref": "#/definitions/PolarityPair" 
+                },
+                "clearness_vs_unclearness": { 
+                    "description": "PROMPT: 0.0=Absolute Clarity (everything explicit). 1.0=Relative Clarity (forms suggested/obscured).",
+                    "$ref": "#/definitions/PolarityPair" 
+                },
+                "kunstwollen": { 
+                    "description": "PROMPT: Define the 'Artistic Will' of the era. What cultural urge drives this form?",
+                    "$ref": "#/definitions/MetricString" 
+                }
+              }
+            },
+            "morellian_connoisseurship": {
+              "description": "PROMPT: Use forensic details to attribute authorship.",
+              "properties": {
+                "diagnostic_traces": { 
+                    "description": "PROMPT: Identify involuntary details (earlobes, fingernails, drapery folds) characteristic of a specific artist.",
+                    "$ref": "#/definitions/MetricArray" 
+                },
+                "attribution_confidence": { "$ref": "#/definitions/MetricNumber" }
+              }
+            }
+          }
+        },
+        "2_cognitive_perceptual_systems": {
+          "type": "object",
+          "properties": {
+            "gestalt_psychology": {
+              "description": "PROMPT: Analyze the perceptual organization of the image.",
+              "properties": {
+                "figure_ground_relationship": { 
+                    "description": "PROMPT: Is the distinction between object (Figure) and background (Ground) stable or ambiguous?",
+                    "$ref": "#/definitions/MetricString" 
+                },
+                "grouping_laws": { 
+                    "description": "PROMPT: Which Gestalt laws are active? (Proximity, Similarity, Continuity, Closure).",
+                    "$ref": "#/definitions/MetricArray" 
+                },
+                "good_gestalt": { 
+                    "description": "PROMPT: Rate the structural simplicity/stability (Prägnanz). 1.0 = Highly Stable.",
+                    "$ref": "#/definitions/MetricNumber" 
+                }
+              }
+            },
+            "neuroarthistory": {
+              "description": "PROMPT: Analyze biological/neurological triggers.",
+              "properties": {
+                "neural_stimuli": { 
+                    "description": "PROMPT: Identify features that trigger specific cortical responses (e.g., V1 edge detection, face processing areas).",
+                    "$ref": "#/definitions/MetricString" 
+                },
+                "biological_affect": { 
+                    "description": "PROMPT: What somatic/emotional response is biologically hardwired by these stimuli?",
+                    "$ref": "#/definitions/MetricString" 
+                }
+              }
+            },
+            "phenomenology": {
+              "description": "PROMPT: Analyze the embodied experience of the viewer.",
+              "properties": {
+                "somatic_relationship": { 
+                    "description": "PROMPT: How does the object relate to the viewer's body in space? Does it demand movement?",
+                    "$ref": "#/definitions/MetricString" 
+                },
+                "theatricality": { 
+                    "description": "PROMPT: Does the work perform for an audience (Theatrical) or exist self-contained (Absorptive)? (Fried).",
+                    "$ref": "#/definitions/MetricString" 
+                }
+              }
+            }
+          }
+        },
+        "3_symbolic_logical_systems": {
+          "type": "object",
+          "properties": {
+            "panofskian_iconology": {
+              "description": "Levels 2 & 3: Conventional Meaning and Intrinsic Worldview.",
+              "properties": {
+                "iconographical_analysis": { 
+                    "description": "PROMPT: Decode specific symbols and narratives using historical texts (e.g., 'Dog = Fidelity', 'Saint with Key = Peter').",
+                    "$ref": "#/definitions/MetricArray" 
+                },
+                "iconological_intuition": { 
+                    "description": "PROMPT: Synthesize these symbols to reveal the 'Weltanschauung' (Worldview) of the period.",
+                    "$ref": "#/definitions/MetricString" 
+                }
+              }
+            },
+            "warburgian_mnemosyne": {
+              "description": "PROMPT: Trace the migration of visual forms across time.",
+              "properties": {
+                "pathosformel": { 
+                    "description": "PROMPT: Identify 'Emotive Formulas'—recurring gestures of high emotion (e.g., the grieving Maenad) surviving from antiquity.",
+                    "$ref": "#/definitions/MetricString" 
+                },
+                "nachleben": { 
+                    "description": "PROMPT: Describe the 'Afterlife' of this form. Where did it come from, and where does it go next?",
+                    "$ref": "#/definitions/MetricString" 
+                }
+              }
+            }
+          }
+        },
+        "4_material_ontological_systems": {
+          "type": "object",
+          "properties": {
+            "technical_art_history": {
+              "description": "PROMPT: Analyze the object as a manufactured product.",
+              "properties": {
+                "material_construction": { 
+                    "description": "PROMPT: Detail the layer structure (support, ground, underdrawing, paint layers, varnish).",
+                    "$ref": "#/definitions/MetricString" 
+                },
+                "manufacturing_logic": { 
+                    "description": "PROMPT: How was it made? Workshop practice, trade routes for pigments, specific tools used.",
+                    "$ref": "#/definitions/MetricString" 
+                },
+                "trade_routes_materials": { 
+                    "description": "PROMPT: Where did the lapis lazuli, cochineal, or wood come from?",
+                    "$ref": "#/definitions/MetricString" 
+                }
+              }
+            },
+            "new_materialism_ooo": {
+              "description": "PROMPT: Analyze the object's agency and independence from humans.",
+              "properties": {
+                "object_agency": { 
+                    "description": "PROMPT: Treat the artwork as an 'Actant'. What does it *do* to its environment? (e.g., it structures movement in a church).",
+                    "$ref": "#/definitions/MetricString" 
+                },
+                "withdrawal": { 
+                    "description": "PROMPT: Identify aspects of the object that resist human understanding or access (e.g., its chemical decay, its back side).",
+                    "$ref": "#/definitions/MetricString" 
+                }
+              }
+            }
+          }
+        },
+        "5_computational_macro_systems": {
+          "type": "object",
+          "properties": {
+            "bildwissenschaft": {
+              "properties": {
+                "iconic_logic": { 
+                    "description": "PROMPT: Analyze the non-linguistic logic of the image. How does it generate meaning through visual syntax alone?",
+                    "$ref": "#/definitions/MetricString" 
+                }
+              }
+            },
+            "computational_metrics": {
+              "properties": {
+                "visual_saliency": { 
+                    "description": "PROMPT: Use Saliency algorithms to identify heatmap hotspots.",
+                    "$ref": "#/definitions/MetricArray" 
+                },
+                "aesthetic_score": { 
+                    "description": "PROMPT: NIMA or similar score (1-10) for technical aesthetic quality.",
+                    "$ref": "#/definitions/MetricNumber" 
+                },
+                "stylometric_data": { 
+                    "description": "PROMPT: Algorithmic assessment of brushstroke density or fractal dimension.",
+                    "$ref": "#/definitions/MetricString" 
+                }
+              }
+            }
+          }
+        },
+        "6_hermeneutics_reception": {
+          "type": "object",
+          "properties": {
+            "reception_theory": {
+              "properties": {
+                "horizon_of_expectation": { 
+                    "description": "PROMPT: What did the original audience expect to see? Did this work satisfy or break those expectations?",
+                    "$ref": "#/definitions/MetricString" 
+                },
+                "interpretive_history": { 
+                    "description": "PROMPT: How has the meaning of this work changed over centuries?",
+                    "$ref": "#/definitions/MetricArray" 
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "critical_perspectives": {
+      "type": "object",
+      "description": "Layer 3: Socio-Political Critique.",
+      "properties": {
+        "social_history_marxist": {
+            "type": "object",
+            "properties": {
+                "class_representation": { 
+                    "description": "PROMPT: How are class relations depicted? Who labors and who consumes?",
+                    "$ref": "#/definitions/MetricString" 
+                },
+                "ideological_function": { 
+                    "description": "PROMPT: How does this image serve the interests of the ruling class (hegemony)?",
+                    "$ref": "#/definitions/MetricString" 
+                }
+            }
+        },
+        "feminist_gender_studies": {
+            "type": "object",
+            "properties": {
+                "the_gaze": { 
+                    "description": "PROMPT: Who owns the gaze? Is the subject active or objectified for pleasure (Scopophilia)?",
+                    "$ref": "#/definitions/MetricString" 
+                },
+                "gender_performativity": { 
+                    "description": "PROMPT: How does the work construct or reinforce gender roles?",
+                    "$ref": "#/definitions/MetricString" 
+                }
+            }
+        },
+        "post_colonial": {
+            "type": "object",
+            "properties": {
+                "orientalism": { 
+                    "description": "PROMPT: Does the work exoticize the 'Other'? Does it reflect imperial power dynamics?",
+                    "$ref": "#/definitions/MetricString" 
+                },
+                "hybridity": { 
+                    "description": "PROMPT: Does the work show the blending of colonizer and colonized cultures?",
+                    "$ref": "#/definitions/MetricString" 
+                }
+            }
+        }
+      }
+    },
+    "evaluative_metrics": {
+      "type": "object",
+      "description": "Layer 4: Axiology & Heuristics (Judgments of Mastery and Value). Evaluating the Intent-Execution Gap.",
+      "properties": {
+        "technical_mastery": {
+            "type": "object",
+            "description": "PROMPT: Evaluate the artist's control over the medium (The Hand).",
+            "properties": {
+                "facture_confidence": {
+                    "description": "PROMPT: The visible speed and assurance of the mark-making. Hesitant/re-worked lines often indicate low mastery; fluid/calligraphic lines indicate high mastery. (Range 0.0-1.0)",
+                    "$ref": "#/definitions/MetricNumber"
+                },
+                "economy_of_means": {
+                    "description": "PROMPT: Efficiency ratio: Impact divided by Effort. High mastery often achieves complex effects with minimal strokes. (Range 0.0-1.0)",
+                    "$ref": "#/definitions/MetricNumber"
+                },
+                "medium_control": {
+                    "description": "PROMPT: The artist's ability to force the material to obey their will. Does the paint drip accidentally (0.0) or intentionally (1.0)?",
+                    "$ref": "#/definitions/MetricString"
+                }
+            }
+        },
+        "internal_coherence": {
+            "type": "object",
+            "description": "PROMPT: Evaluate the logic of the system (The Mind). Does the work obey its own rules?",
+            "properties": {
+                 "deviation_consistency": {
+                     "description": "PROMPT: If rules (perspective, anatomy) are broken, are they broken consistently? 1.0 = Systemic Distortion (Picasso); 0.0 = Incompetent Distortion.",
+                     "$ref": "#/definitions/MetricNumber"
+                 },
+                 "signal_to_noise_ratio": {
+                     "description": "PROMPT: Does every element in the frame contribute to the total effect (Signal), or are there dead spots/unresolved areas (Noise)?",
+                     "$ref": "#/definitions/MetricNumber"
+                 }
+            }
+        },
+        "canonical_value": {
+            "type": "object",
+            "description": "PROMPT: Objective historical status (The Canon).",
+            "properties": {
+                "historical_significance": {
+                     "description": "PROMPT: Did this specific object change the trajectory of art history? (Derivative, Contributor, Masterpiece, Paradigm_Shift)",
+                     "$ref": "#/definitions/MetricString"
+                },
+                "rarity_factor": {
+                     "description": "PROMPT: Scarcity of the object type relative to the artist's total output.",
+                     "$ref": "#/definitions/MetricNumber"
+                }
+            }
+        },
+        "affective_value": {
+            "type": "object",
+             "description": "PROMPT: Subjective/Phenomenological impact (The Viewer).",
+             "properties": {
+                 "viewer_arrest": {
+                     "description": "PROMPT: Stopping Power. The immediate ability of the image to hold attention before cognitive processing begins. (Range 0.0-10.0)",
+                     "$ref": "#/definitions/MetricNumber"
+                 },
+                 "authorial_intent_fulfillment": {
+                     "description": "PROMPT: Did the author achieve their goal? (e.g., If the goal was to shock, is it shocking?)",
+                     "$ref": "#/definitions/PolarityPair"
+                 }
+             }
+        }
+      }
+    },
+    "final_synthesis": {
+      "type": "object",
+      "description": "Layer 5: Synthesis (The Outro). Consolidates the analysis into final narrative outputs.",
+      "properties": {
+        "executive_summary": {
+           "type": "string",
+           "description": "PROMPT: Generate a single-paragraph synthesis suitable for a gallery wall label or executive brief. Focus on the 'So What?'"
+        },
+        "key_insights": {
+           "type": "array",
+           "description": "PROMPT: Extract the 3 most critical findings that define this work's significance.",
+           "minItems": 3,
+           "maxItems": 3,
+           "items": { "type": "string" }
+        },
+        "pedagogical_prompt": {
+            "type": "string",
+            "description": "PROMPT: Generate one provocative question to ask a student or viewer to deepen their engagement with this work."
+        }
+      },
+      "required": ["executive_summary", "key_insights"]
+    }
+  },
+  "required": ["metadata", "object_provenance", "primary_observation", "final_synthesis"]
+}
