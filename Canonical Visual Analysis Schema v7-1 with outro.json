@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://caadsi.org/schemas/visual-analysis-v7-3.json",
+  "$id": "schemas/visual-analysis-v7-3.json",
   "title": "Canonical Visual Analysis Schema: Synthesis Edition (v7.3)",
   "description": "A unified schema separating Primary Observation (Data) from Analytical Frameworks (Systems), Critical Perspectives (Critique), Evaluative Metrics (Mastery/Value), and Final Synthesis (Outro).",
   "type": "object",
@@ -538,4 +538,5 @@
     }
   },
   "required": ["metadata", "object_provenance", "primary_observation", "final_synthesis"]
+
 }
